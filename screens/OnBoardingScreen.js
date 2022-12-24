@@ -1,78 +1,113 @@
-import { View, Text, Pressable, SafeAreaView, TextInput, TouchableOpacity } from 'react-native';
-import React from 'react';
-import useAuth from '../hooks/useAuth';
+import { View, Text, TextInput, TouchableOpacity, ImageBackground } from 'react-native';
+import { useState } from 'react';
 import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { db } from "../firebaseConfig";
+import useAuth from '../hooks/useAuth';
 import { useNavigation } from '@react-navigation/native';
+import bg from '../images/bg_2.png'
+import { AntDesign } from '@expo/vector-icons';
 
 const OnBoardingScreen = () => {
 
   const { user } = useAuth();
-  const [fname, setFName] = React.useState()
-  const [lname, setLname] = React.useState()
-  const [uni, setUni] = React.useState()
-  const [url1, setURL1] = React.useState()
-  const [bio, setBio] = React.useState("")
+  const [fname, setFName] = useState("");
+  const [lname, setLname] = useState("");
+  const [age, setAge] = useState("");
+  const [uni, setUni] = useState("");
+  const [location, setLocation] = useState("");
+  const [job, setJob] = useState("");
+  const [cname, setCname] = useState("");
+  const [count, setCount] = useState(0);
   const navigation = useNavigation();
 
-  const incomplete = !fname || !lname || !uni || !url1
-
-  const adduser = () => {
-    setDoc(doc(db, "users", user.uid), {
+  const check_complete = () => {
+    if (count === 4) {
+      setDoc(doc(db, "users", user.uid), {
       id: user.uid,
       fname: fname,
       lname: lname,
+      age: age,
       uni: uni,
-      url1: url1,
-      bio: bio,
+      location: location,
+      job: job,
+      cname: cname,
       email: user.email,
       timestamp: serverTimestamp()
     }).then(() => { navigation.navigate("Home") }).catch((error) => { alert(error.message) });
-  };
+    } else {
+      setCount((current) => current + 1)
+    }
+  }
+
+
+  const data = [{
+    title: "Let us know more about you",
+    p1: "First Name (Required)",
+    q1: fname,
+    q1f: setFName,
+    p2: "Last Name",
+    q2: lname,
+    q2f: setLname,
+  }, {
+    title: "How old are you",
+    p1: "Age",
+    q1: age,
+    q1f: setAge,
+  }, {
+    title: "Where do you live",
+    p1: "Location (City, State)",
+    q1: location,
+    q1f: setLocation,
+    }, {
+    title: "Education background",
+    p1: "University",
+    q1: uni,
+    q1f: setUni,
+  }, {
+    title: "Current working position",
+    p1: "Job Title",
+    q1: job,
+    q1f: setJob,
+    p2: "Company Name (Optional)",
+    q2: cname,
+    q2f: setCname,
+  },]
   
+
   return (
-    <SafeAreaView className="flex-1 bg-neutral-900 pt-10">
-      <Text className="pl-5 pt-10 text-7xl text-amber-300" >Welcome</Text>
-      <Text className="pl-5 pt-2 text-xl text-neutral-300">Fill Out This Form to Get Started</Text>
-      <TextInput className="pt-5 pl-5 pr-5 text-2xl" 
-        placeholder='First Name'
-        placeholderTextColor='white'
-        style={{color: 'white'}}
-        value={fname}
-        onChangeText={setFName} />
-      <TextInput className="pl-5 pt-5 pr-5 text-2xl " 
-        placeholder='Last Name' 
-        placeholderTextColor='white'
-        style={{color: 'white'}}
-        value={lname} 
-        onChangeText={setLname} />
-      <TextInput className="pl-5 pt-5 pr-5 text-2xl " 
-        placeholder='University' 
-        placeholderTextColor='white'
-        style={{color: 'white'}}
-        value={uni} 
-        onChangeText={setUni} />
-      <TextInput className="pl-5 pt-5 pr-5 text-2xl " 
-        placeholder='LinkedIn URL' 
-        placeholderTextColor='white'
-        style={{color: 'white'}}
-        value={url1} 
-        onChangeText={setURL1} />
-      <TextInput className="pl-5 pt-5 pr-5 text-2xl " 
-        placeholder='More (optional)' 
-        multiline
-        numberOfLines={4}
-        placeholderTextColor='white'
-        style={{color: 'white'}}
-        value={bio} 
-        textAlignVertical='top'
-        onChangeText={setBio} />
-      <View className="justify-center flex-1 items-center">
-        <TouchableOpacity disabled={incomplete} onPress={adduser}>
-          <Text className={ incomplete ? "text-3xl text-neutral-700" : "text-3xl text-neutral-300"}>Submit</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+    <View className="flex-1 bg-alabaster">
+      <ImageBackground source={bg} resizeMode="cover">
+        <View className="h-full">
+
+              <View className="ml-8 mr-8 h-1/3 justify-end">
+                <Text className="text-4xl text-space-cadet" >{data[count].title}</Text>
+                </View>
+              <View className="ml-8 mr-8 mt-5 pt-8 pr-10 h-1/3">
+                  {data[count].q1f != null ? (
+                    <>
+                    <TextInput className="text-xl"
+                      placeholder={data[count].p1}
+                      value={data[count].q1}
+                      onChangeText={data[count].q1f} />
+                      <View className="bg-space-cadet h-0.5 mt-2" />
+                    </>
+                  ) : (<></>)}
+                  {data[count].q2f != null ? (
+                  <>
+                    <TextInput className="mt-5 text-xl"
+                      placeholder={data[count].p2} 
+                      value={data[count].q2}
+                      onChangeText={data[count].q2f} />
+                      <View className="bg-space-cadet h-0.5 mt-2" />
+                  </>
+                ) : (<></>)}
+                  </View>
+          <TouchableOpacity disabled={!data[count].q1} className={!data[count].q1 ? "absolute bottom-24 right-10 items-center justify-center rounded-full w-20 h-20 bg-light-mandarin" : "absolute bottom-24 right-10 items-center justify-center rounded-full w-20 h-20 bg-mandarin"} onPress={() => { check_complete() }} >
+            <AntDesign name="right" size={30} color="white" />
+          </TouchableOpacity>
+        </View>
+      </ImageBackground>
+    </View>
   )
 }
 

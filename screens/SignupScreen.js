@@ -1,27 +1,31 @@
-import { View, Text, TextInput, SafeAreaView, TouchableOpacity } from 'react-native'
-import React from 'react'
-import { useNavigation } from '@react-navigation/native'
+import { View, Text, TextInput, TouchableOpacity, ImageBackground } from 'react-native'
+import { useState } from 'react'
 import { auth } from "../firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import bg from "../images/bg_1.png"
+import { useNavigation } from '@react-navigation/native';
 
 const SignupScreen = () => {
 
-    const [email, setEmail] = React.useState()
-    const [password, setPassword] = React.useState()
-    const [confirmPassword, setConfirmPassword] = React.useState()
-    const [validationMessage, setValidationMessage] = React.useState("");
-    const navigation = useNavigation();
+    const [email, setEmail] = useState()
+    const [password, setPassword] = useState()
+    const [disable, setDisable] = useState(false);
+    const [confirmPassword, setConfirmPassword] = useState()
+    const [validationMessage, setValidationMessage] = useState("");
+    const navigation = useNavigation()
 
-    let signUp = () => {
-        if (password === confirmPassword) {
+  const signUp = () => {
+    if (password === confirmPassword) {
+          setDisable(true)
           createUserWithEmailAndPassword(auth, email, password)
           .catch((error) => {
             setValidationMessage(error.message);
+            setDisable(false);
           });
-        }
-      } 
+      }
+    } 
 
-  let validateAndSet = (value, valueToCompare, setValue) => {
+  const validateAndSet = (value, valueToCompare, setValue) => {
     if (value !== valueToCompare) {
       setValidationMessage("Passwords do not match.");
     } else {
@@ -34,38 +38,47 @@ const SignupScreen = () => {
 
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral-900 pt-10 pl-2">
-      <Text className="pl-5 pt-10 text-7xl text-amber-300 underline" >Signup</Text>
-      <TextInput className="pt-3 pl-5 pr-5 text-3xl" 
-        placeholder='Email'
-        placeholderTextColor='white'
-        style={{color: 'white'}}
-        value={email}
-        onChangeText={setEmail} />
-      <TextInput className="pl-5 pt-2 pr-5 text-3xl " 
-        placeholder='Password' 
-        placeholderTextColor='white'
-        style={{color: 'white'}}
-        value={password}
-      secureTextEntry={true} 
-      onChangeText={(value) => validateAndSet(value, confirmPassword, setPassword)} />
-      <TextInput className="pl-5 pt-2 pr-5 text-3xl " 
-        placeholder='Comfirm Password' 
-        placeholderTextColor='white'
-        style={{color: 'white'}}
-      value={confirmPassword}
-      secureTextEntry={true} 
-      onChangeText={(value) => validateAndSet(value, password, setConfirmPassword)} />
-      <Text className="pt-10 pl-5 text-xl pr-5 text-neutral-300">{validationMessage}</Text>
-      <View className="justify-center flex-1 items-center">
-        <TouchableOpacity onPress={() => navigation.popToTop()}>
-            <Text className="text-3xl text-neutral-300" >Return</Text>
-        </TouchableOpacity>
-        <TouchableOpacity className="pt-5" onPress={signUp}>
-            <Text className="text-3xl  text-amber-300" >Create Account</Text>
-        </TouchableOpacity>
+    <View className="flex-1 bg-alabaster">
+      <ImageBackground source={bg} resizeMode="cover">
+        <View className="ml-8 h-1/5" />
+      <View className="ml-8 h-1/3 justify-center">
+        <Text className="text-4xl text-space-cadet" >Create</Text>
+        <Text className="mt-0.5 text-4xl text-space-cadet" >Account</Text>
       </View>
-    </SafeAreaView>
+      <View className="pl-8 pr-8 justify-center flex-column">
+        <TextInput className="text-xl"
+        placeholder='Email' 
+        value={email}
+          onChangeText={setEmail} />
+        <View className="bg-space-cadet h-0.5 mt-2"/>
+      <TextInput className="mt-5 text-xl"
+        placeholder='Password' 
+        value={password}
+       secureTextEntry={true} 
+          onChangeText={(value) => validateAndSet(value, confirmPassword, setPassword)} />
+        <View className="bg-space-cadet h-0.5 mt-2"/>
+      
+      <TextInput className="mt-5 text-xl"
+        placeholder='Comfirm Password' 
+        value={confirmPassword}
+        secureTextEntry={true} 
+          onChangeText={(value) => validateAndSet(value, password, setConfirmPassword)} />
+        <View className="bg-space-cadet h-0.5 mt-2" />
+        <View className="h-10">
+            <Text className="mt-5 text-base text-shadow">{validationMessage}</Text>
+        </View>
+      </View>
+      <View className="flex-1 items-center m-8 pt-10">
+        <TouchableOpacity className={disable ? ("h-12 w-full items-center justify-center rounded-xl bg-light-mandarin") : ("h-12 w-full items-center justify-center rounded-xl bg-mandarin")} onPress={signUp} disabled={disable}>
+          <Text className="text-xl text-platinum" >Signup</Text>
+        </TouchableOpacity>
+      
+        <TouchableOpacity className="mt-4 h-12 w-full items-center justify-center rounded-xl bg-white" onPress={() => navigation.pop()}>
+          <Text className="text-xl text-shadow" >Return</Text>
+        </TouchableOpacity>
+        </View>
+      </ImageBackground>
+    </View>
   )
 }
 
