@@ -5,7 +5,9 @@ import HomeScreen from './screens/HomeScreen';
 import ChatScreen from './screens/ChatScreen';
 import LoginScreen from './screens/LoginScreen';
 import SignupScreen from './screens/SignupScreen';
+import PostScreen from './screens/PostScreen';
 import OnBoardingScreen from './screens/OnBoardingScreen';
+import OnBoardingScreen2 from './screens/OnBoardingScreen2';
 import useAuth from './hooks/useAuth';
 import { Ionicons, Entypo } from '@expo/vector-icons'
 
@@ -56,7 +58,9 @@ const StackNavigator = () => {
             {user ? (
                 <Stack.Group screenOptions={{headerShown: false}}>
                     <Stack.Screen name="Main" component={Main} />
+                    <Stack.Screen name="Post" component={PostScreen} />
                     <Stack.Screen name="Onboarding" component={OnBoardingScreen} />
+                    <Stack.Screen name="Onboarding2" component={OnBoardingScreen2} />
                 </Stack.Group>
                 
             ) : (

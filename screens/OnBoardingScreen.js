@@ -33,7 +33,7 @@ const OnBoardingScreen = () => {
       cname: cname,
       email: user.email,
       timestamp: serverTimestamp()
-    }).then(() => { navigation.navigate("Home") }).catch((error) => { alert(error.message) });
+    }).then(() => { navigation.navigate("Onboarding2") }).catch((error) => { alert(error.message) });
     } else {
       setCount((current) => current + 1)
     }
@@ -49,8 +49,8 @@ const OnBoardingScreen = () => {
     q2: lname,
     q2f: setLname,
   }, {
-    title: "How old are you",
-    p1: "Age",
+    title: "What's your Gender Pronouns",
+    p1: "Gender",
     q1: age,
     q1f: setAge,
   }, {
